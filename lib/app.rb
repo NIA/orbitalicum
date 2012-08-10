@@ -28,6 +28,8 @@ class App
     @event_queue.enable_new_style_events
 
     setup_clock
+
+    Rubygame::TTF.setup
   end
 
   def setup_clock

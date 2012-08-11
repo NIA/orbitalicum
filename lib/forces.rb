@@ -6,18 +6,14 @@ require "v2d"
 # are constants, r is the distance from center to pos.
 # When A > 0 -- it is attraction, when A < 0 -- repulsion.
 class Gravity
-  # Min distance for the force to act
-  # (to avoid division by zero)
-  MIN_DISTANCE = 1e-6
-
-  def initialize(center, amplitude, degree = 2)
-    @center, @a, @n = center, amplitude, degree
+  def initialize(center, amplitude, min_dist, degree = 2)
+    @center, @a, @min_dist, @n = center, amplitude, min_dist, degree
   end
 
   # Returns acceleration at given position
   def at(pos)
     r = pos - @center
-    return V2D[0, 0] if r.abs < MIN_DISTANCE
+    return V2D[0, 0] if r.abs < @min_dist
     gravity = - r * @a / (r.abs ** (@n+1) )
     #gravity.tap {|x| puts "Gravity: #{x.x},#{x.y}" }
   end

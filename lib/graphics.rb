@@ -7,6 +7,21 @@ include Rubygame::Color
 module Graphics
   BG_COLOR = [0, 0, 0, 255]
 
+  # A visual representation of a physical object
+  class Circle
+    def initialize(phys_object, color)
+      @obj, @color = phys_object, color
+    end
+
+    def draw_on(surface)
+      surface.draw_circle_s @obj.pos_to_a, @obj.radius, @color
+    end
+
+    def erase_on(surface)
+      surface.draw_circle_s @obj.pos_to_a, @obj.radius, BG_COLOR
+    end
+  end
+
   def self.draw_gradient_polyline(surface, points, color1, color2)
     return if points.count < 2
 

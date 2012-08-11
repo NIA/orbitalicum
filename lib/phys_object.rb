@@ -18,12 +18,14 @@ class PhysObject
   attr_reader :pos
   attr_reader :speed
   attr_reader :acc
+  attr_reader :radius
   MAX_DT = 0.02
 
   # Initializes the object with the given position
   # and speed, each as two components of a 2D vector
-  def initialize(posx, posy, speedx = 0, speedy = 0)
+  def initialize(posx, posy, radius, speedx = 0, speedy = 0)
     @pos = V2D[posx, posy]
+    @radius = radius
     @speed = V2D[speedx, speedy]
     @acc = V2D[0, 0]
   end

@@ -17,19 +17,24 @@ app = App.new 800, 600, "Orbitalicum game [work in progress]"
 forces = []
 orbit = []
 path = []
+drawables = []
 
 # Create sun
-sun = PhysObject.new *app.screen.size.map{|x| x/2}
+sun = PhysObject.new 400, 300, 20
 forces << Gravity.new( sun.pos, 1e7 )
 forces << SphereRepulsion.new( sun.pos, 2e3, 20+10 )
+drawables << Circle.new( sun, [255, 255, 0] )
 
 # Create another star
-star = PhysObject.new *app.screen.size.map{|x| x/4}
+star = PhysObject.new 200, 150, 30
 forces << Gravity.new( star.pos, 2e7 )
 forces << SphereRepulsion.new( star.pos, 2e3, 30+10 )
+drawables << Circle.new( star, [255, 128, 0] )
 
 # Create sputnik
-sputnik = PhysObject.new 50, 50, -40, 340 #app.screen.size[0], app.screen.size[1]/2, 0, 150
+sputnik = PhysObject.new 50, 50, 10, -40, 340
+drawables << Circle.new( sputnik, [100, 100, 255] )
+
 step = 0
 
 app.run do |event|
@@ -41,8 +46,7 @@ app.run do |event|
   when ClockTicked
     step += 1
     app.draw do |screen|
-      #screen.draw_circle_s sputnik.pos_to_a, 10, BG_COLOR
-      #screen.draw_polygon orbit, BG_COLOR
+      # TODO: check if it's slow
       screen.fill BG_COLOR
 
       dt = event.seconds
@@ -52,13 +56,9 @@ app.run do |event|
       path.unshift(sputnik.pos_to_a) if step % 2 == 0
       path.pop if path.size > PATH_SIZE
 
-      #screen.draw_polygon orbit, [255, 255, 255]
       Graphics.draw_gradient_polyline screen, path, [75, 75, 175], BG_COLOR
       Graphics.draw_gradient_polyline screen, orbit, [255, 255, 255], BG_COLOR
-      screen.draw_circle_s star.pos_to_a, 30, [255, 128, 0]
-      screen.draw_circle_s sun.pos_to_a, 20, [255, 255, 0]
-      screen.draw_circle_s sputnik.pos_to_a, 10, [100, 100, 255]
-
+      drawables.each {|x| x.draw_on screen}
       Graphics.draw_text screen, sputnik.speed.abs.to_i.to_s
     end
   else

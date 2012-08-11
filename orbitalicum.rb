@@ -30,7 +30,12 @@ star = PhysObject.new 200, 150, 30
 star.enable_gravity! 2e7
 drawables << Circle.new( star, [255, 128, 0] )
 
-stars = [sun, star]
+# Create little star
+little = PhysObject.new 600, 200, 15
+little.enable_gravity! 7.5e6
+drawables << Circle.new( little, [128, 158, 255] )
+
+stars = [sun, star, little]
 
 # Create sputnik
 sputnik = PhysObject.new 50, 50, 10, -40, 340
@@ -38,15 +43,23 @@ drawables << Circle.new( sputnik, [100, 100, 255] )
 
 step = 0
 paused = false
+slow = false
+push_dir = nil  # push direction
+
 
 app.run do |event|
   case event
   when KeyPressed
-    if event.key == :p
+    case event.key
+    when :p
       paused = !paused
-    elsif PhysObject.direction? event.key
-      sputnik.push! event.key, 2
+    when :s
+      slow = !slow
+    else
+      push_dir = event.key if PhysObject.direction? event.key
     end
+  when KeyReleased
+    push_dir = nil
   when ClockTicked
     next if paused
     step += 1
@@ -54,7 +67,9 @@ app.run do |event|
       # TODO: check if it's slow
       screen.fill BG_COLOR
 
-      dt = 0.01 # event.seconds
+      dt = slow ? 0.001 : 0.01 # event.seconds
+
+      sputnik.push!( push_dir, 2 ) if push_dir
       sputnik.move! dt, stars
 
       t = 1

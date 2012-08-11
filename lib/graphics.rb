@@ -31,11 +31,12 @@ module Graphics
     n = points.count
     (n-2).downto(0) do |i|
       color = color2.average color1, i.to_f/(n-1)
-      surface.draw_line points[i], points[i+1], color
+      surface.draw_line_a points[i], points[i+1], color
     end
   end
 
   def self.draw_text(surface, text)
+    # FIXME: WIN32-dependent!
     font = Rubygame::TTF.new "C:/Windows/Fonts/arialbd.ttf", 25
     smooth = true
     text_surface = font.render_utf8 text, smooth, [ 0xee, 0xee, 0x33]

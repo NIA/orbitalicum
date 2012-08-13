@@ -5,7 +5,7 @@ include Rubygame::Color
 
 # A set of convenience methods for drawing
 module Graphics
-  BG_COLOR = [0, 0, 0, 255]
+  BG_COLOR = [0, 0, 0, 0]
 
   # A visual representation of a physical object
   class Circle

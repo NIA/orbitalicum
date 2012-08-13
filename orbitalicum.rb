@@ -13,6 +13,8 @@ include Graphics
 PATH_SIZE = 300
 app = App.new 1024, 768, "Orbitalicum game [work in progress]"
 
+puts "Initializing the world...."
+
 forces = []
 drawables = []
 
@@ -52,6 +54,8 @@ slow = false
 push_dir = nil  # push direction
 engine_mode = :normal
 
+background = Rubygame::Surface.load "background.jpg" # Image from http://apod.nasa.gov/apod/ap050804.html
+
 app.run do |event|
   case event
   when KeyPressed
@@ -78,7 +82,7 @@ app.run do |event|
     step += 1
     app.draw do |screen|
       # TODO: check if it's slow
-      screen.fill BG_COLOR
+      background.blit screen, [0,0]
 
       dt = slow ? 0.001 : 0.01 # event.seconds
 

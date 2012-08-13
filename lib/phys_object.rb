@@ -65,23 +65,27 @@ class PhysObject
     orbit.map &:to_a
   end
 
-  # Instantly adds speed correction with given +direction+ and +value+
-  def push!(direction, value)
+  def direction_vector(direction)
     forward = @speed / @speed.abs
     left = V2D[forward.y, -forward.x]
 
     case direction
     when :left
-      @speed += left*value
+      left
     when :right
-      @speed -= left*value
-    when :up
-      @speed += forward*value
-    when :down
-      @speed -= forward*value
+      -left
+    when :forward
+      forward
+    when :back
+      -forward
     else
       raise "Illegal direction: #{direction}!"
     end
+  end
+
+  # Instantly adds speed correction with given +direction+ and +value+
+  def push!(direction, value)
+    @speed += direction_vector(direction)*value
   end
 
   # Changes own speed in order to stop penetrating
@@ -100,7 +104,7 @@ class PhysObject
   # Checks if given symbol is a valid direction to be
   # passed to #push! method
   def self.direction?(direction)
-    [:left, :right, :up, :down].include? direction
+    [:left, :right, :forward, :back].include? direction
   end
 
   # returns position as array [x, y]

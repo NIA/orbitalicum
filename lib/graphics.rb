@@ -22,6 +22,22 @@ module Graphics
     end
   end
 
+  # A visual representation of reaction: a fire from engine nozzle
+  class Fire
+    def initialize(phys_object, w, h, color)
+      @obj, @w, @h, @color = phys_object, w, h, color
+    end
+    def draw_on(surface, axis)
+      normal = V2D[axis.y, -axis.x]
+      start = @obj.pos + axis*@obj.radius
+
+      triangle = [axis*@h, normal*(@w/2), -normal*(@w/2)]
+      triangle.map! {|v| (start + v).to_a }
+
+      surface.draw_polygon_s triangle, @color
+    end
+  end
+
   def self.draw_gradient_polyline(surface, points, color1, color2)
     return if points.count < 2
 

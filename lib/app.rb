@@ -21,9 +21,6 @@ class App
     #  + events such as "the mouse has moved", "a key has been pressed" and so on
     @event_queue = Rubygame::EventQueue.new
 
-    # Don't care about mouse movement, so let's ignore it.
-		@event_queue.ignore = [Rubygame::Events::MouseMoved]
-
     # Use new style events so that this software will work with Rubygame 3.0
     @event_queue.enable_new_style_events
 

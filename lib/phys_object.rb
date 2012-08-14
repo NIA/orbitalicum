@@ -34,11 +34,11 @@ class PhysObject
     @acc = V2D[0, 0]
     # By default gravity is disabled. If needed,
     # it should be enabled with PhysObject#enable_gravity
-    @gravity = Gravity.new @pos, 0, @radius
+    @gravity = Gravity.new self, 0, @radius
   end
 
   def enable_gravity!(amplitude)
-    @gravity = Gravity.new @pos, amplitude, @radius
+    @gravity = Gravity.new self, amplitude, @radius
   end
 
   # Integrates the motion of the object for time step +dt+.
@@ -51,6 +51,12 @@ class PhysObject
     @speed += @acc * dt
     objects.each {|o| self.collide_with!(o)}
     @pos += @speed * dt
+  end
+
+  # Instantly move to a new position differing from current with +dx+, +dy+
+  def shift!(dx, dy)
+    @pos.x += dx
+    @pos.y += dy
   end
 
   # Returns an array of points of orbit, where each point is
@@ -99,6 +105,11 @@ class PhysObject
     if v_normal < 0
       @speed += normal*(-2*v_normal)
     end
+  end
+
+  # Returns true if +point+ is geometrically inside object
+  def include?(point)
+    (point - @pos).abs <= @radius
   end
 
   # Checks if given symbol is a valid direction to be

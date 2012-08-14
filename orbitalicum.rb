@@ -46,13 +46,14 @@ fire = { :normal => Fire.new( sputnik, 10, 15, [248, 238, 100] ),
          :turbo  => Fire.new( sputnik, 14, 22, [255, 245, 185] ) }
 
 KEYS = { :left => :left, :right => :right, :forward => :up, :back => :down,
-         :pause => :p, :slow => :s, :turbo => :left_shift }
+         :pause => :p, :slow => :s, :turbo => :left_shift, :drag => :mouse_left }
 
 step = 0
 paused = false
 slow = false
 push_dir = nil  # push direction
 engine_mode = :normal
+dragging = nil
 
 background = Rubygame::Surface.load "background.jpg" # Image from http://apod.nasa.gov/apod/ap050804.html
 
@@ -76,6 +77,18 @@ app.run do |event|
       push_dir = nil
     when KEYS[:turbo]
       engine_mode = :normal
+    end
+  when MousePressed
+    if event.button == KEYS[:drag]
+      dragging = stars.detect { |s| s.include? V2D[*event.pos] }
+    end
+  when MouseReleased
+    if event.button == KEYS[:drag]
+      dragging = nil
+    end
+  when MouseMoved
+    if dragging
+      dragging.shift! *event.rel
     end
   when ClockTicked
     next if paused

@@ -3,16 +3,16 @@ require "v2d"
 
 # A central force (actually, acceleration) field.
 # It's value is A/(r^N) where A (amplitude) and N (degree)
-# are constants, r is the distance from center to pos.
+# are constants, r is the distance from obj to pos.
 # When A > 0 -- it is attraction, when A < 0 -- repulsion.
 class Gravity
-  def initialize(center, amplitude, min_dist, degree = 2)
-    @center, @a, @min_dist, @n = center, amplitude, min_dist, degree
+  def initialize(obj, amplitude, min_dist, degree = 2)
+    @obj, @a, @min_dist, @n = obj, amplitude, min_dist, degree
   end
 
   # Returns acceleration at given position
   def at(pos)
-    r = pos - @center
+    r = pos - @obj.pos
     return V2D[0, 0] if r.abs < @min_dist
     gravity = - r * @a / (r.abs ** (@n+1) )
     #gravity.tap {|x| puts "Gravity: #{x.x},#{x.y}" }

@@ -37,6 +37,7 @@ little.enable_gravity! 7.5e6
 drawables << Circle.new( little, [128, 158, 255] )
 
 stars = [sun, star, little]
+stars.each { |s| s.elasticity = 0.6 }
 
 # Create sputnik
 sputnik = PhysObject.new 150, 150, 10, -40, 340

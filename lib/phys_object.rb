@@ -23,6 +23,10 @@ class PhysObject
   attr_reader :acc
   attr_reader :radius
   attr_reader :gravity
+  # This coef shows how much of normal velocity is lost after collision
+  # When 1, nothing is lost; when 0, normal velocity becomes zero afterwards
+  attr_reader :elasticity
+
   MAX_DT = 0.02
 
   # Initializes the object with the given position
@@ -34,11 +38,16 @@ class PhysObject
     @acc = V2D[0, 0]
     # By default gravity is disabled. If needed,
     # it should be enabled with PhysObject#enable_gravity
-    @gravity = Gravity.new self, 0, @radius
+    @gravity = Gravity.zero
+    @elasticity = 1
   end
 
   def enable_gravity!(amplitude)
     @gravity = Gravity.new self, amplitude, @radius
+  end
+
+  def elasticity=(value)
+    @elasticity = [0, [value, 1].min].max
   end
 
   # Integrates the motion of the object for time step +dt+.
@@ -103,7 +112,8 @@ class PhysObject
     normal = r/r.abs
     v_normal = @speed.scalar_mult normal
     if v_normal < 0
-      @speed += normal*(-2*v_normal)
+      mult = 1 + immovable_object.elasticity
+      @speed += normal*(-mult*v_normal)
     end
   end
 

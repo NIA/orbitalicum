@@ -17,6 +17,11 @@ class Gravity
     gravity = - r * @a / (r.abs ** (@n+1) )
     #gravity.tap {|x| puts "Gravity: #{x.x},#{x.y}" }
   end
+
+  # Returns fake gravity that is 0 everywhere
+  def self.zero
+    @@zero ||= ZeroForce.new
+  end
 end
 
 # An imitaion of colision response with sphere,
@@ -36,5 +41,11 @@ class SphereRepulsion
     ort = r / r.abs
     repulsion = ort * @k*(@radii - r.abs)
     #repulsion.tap {|x| puts "Repulsion: #{x.x},#{x.y}" }
+  end
+end
+
+class ZeroForce
+  def at(pos)
+    @zero ||= V2D[0,0]
   end
 end

@@ -51,11 +51,13 @@ module Graphics
     end
   end
 
+  def self.font
+    @@font ||= Rubygame::TTF.new "assets/DejaVuSansCondensed-Bold.ttf", 25
+  end
+
   def self.draw_text(surface, text)
-    # FIXME: WIN32-dependent!
-    font = Rubygame::TTF.new "C:/Windows/Fonts/arialbd.ttf", 25
     smooth = true
-    text_surface = font.render_utf8 text, smooth, [ 0xee, 0xee, 0x33]
+    text_surface = self.font.render_utf8 text, smooth, [ 0xee, 0xee, 0x33]
 
     # Determine the dimensions in pixels of the area used to render the text.  The
     # "topleft" of the returned rectangle is at [ 0, 0]

@@ -55,7 +55,7 @@ push_dir = nil  # push direction
 engine_mode = :normal
 dragging = nil
 
-background = Rubygame::Surface.load "background.jpg" # Image from http://apod.nasa.gov/apod/ap050804.html
+background = Rubygame::Surface.load "assets/background.jpg" # Image from http://apod.nasa.gov/apod/ap050804.html
 
 app.run do |event|
   case event

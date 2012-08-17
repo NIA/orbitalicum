@@ -31,7 +31,7 @@ class App
 
   def setup_clock
     @clock = Rubygame::Clock.new
-    @clock.target_framerate = 100
+    @clock.target_framerate = 75
 
     # Adjust the assumed granularity to match the system.
     # This helps minimize CPU usage on systems with clocks

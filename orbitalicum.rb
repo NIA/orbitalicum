@@ -102,6 +102,7 @@ app.run do |event|
 
       reaction = 2
       reaction *= 10 if engine_mode == :turbo
+      reaction = [sputnik.speed.abs, reaction].min if push_dir == :back
       sputnik.push!( push_dir, reaction ) if push_dir
       sputnik.move! dt, stars
 
@@ -113,7 +114,7 @@ app.run do |event|
 
       Graphics.draw_gradient_polyline screen, path, [75, 75, 175], BG_COLOR
       Graphics.draw_gradient_polyline screen, orbit, [255, 255, 255], BG_COLOR
-      fire[engine_mode].draw_on screen, -sputnik.direction_vector(push_dir) if push_dir
+      fire[engine_mode].draw_on screen, -sputnik.direction_vector(push_dir) if push_dir and reaction > 0
       drawables.each {|x| x.draw_on screen}
       Graphics.draw_text screen, sputnik.speed.abs.to_i.to_s
     end

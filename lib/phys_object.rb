@@ -28,6 +28,7 @@ class PhysObject
   attr_reader :elasticity
 
   MAX_DT = 0.02
+  MIN_SPEED = 1
 
   # Initializes the object with the given position
   # and speed, each as two components of a 2D vector
@@ -81,7 +82,7 @@ class PhysObject
   end
 
   def direction_vector(direction)
-    forward = @speed / @speed.abs
+    forward = @speed.abs > MIN_SPEED ? @speed / @speed.abs : V2D[0, -1]
     left = V2D[forward.y, -forward.x]
 
     case direction

@@ -63,10 +63,10 @@ class PhysObject
     @pos += @speed * dt
   end
 
-  # Instantly move to a new position differing from current with +dx+, +dy+
-  def shift!(dx, dy)
-    @pos.x += dx
-    @pos.y += dy
+  # Instantly move to a new position differing from current with +dr+ == [dx, dy]
+  def shift!(dr)
+    @pos.x += dr[0]
+    @pos.y += dr[1]
   end
 
   # Returns an array of points of orbit, where each point is

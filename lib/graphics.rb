@@ -38,6 +38,61 @@ module Graphics
     end
   end
 
+  # A wrapper class over Rubygame::Surface to handle zooming of
+  # drawing area with no need to zoom bitmap: by changing coordinates
+  # and size of primitive shapes on-the-fly
+  class ZoomableSurface < Rubygame::Surface
+    attr_accessor :zoom
+
+    def initialize(size, depth = 0, flags = [])
+      super size, depth, flags
+      @zoom = 1.0
+      @old_center = [width/2, height/2]
+      @center = @old_center.dup
+    end
+
+    # Takes [dx,dy] in actual, non-zoomed coordinates
+    # and adds this change to @center position
+    def shift!(dr)
+      (0..1).each { |i| @center[i] += dr[i] }
+    end
+
+    def draw_circle_s(pos, radius, color)
+      super transformed(pos), radius*@zoom, color
+    end
+
+    def draw_polygon_s(points, color)
+      points.map! {|p| transformed(p)}
+      super points, color
+    end
+
+    def draw_line_a(point1, point2, color)
+      super transformed(point1), transformed(point2), color
+    end
+
+    # Takes [x,y] of **point** in actual, non-zoomed coordinates,
+    # returns screen coordinates [x1,y1] transformed by zoom
+    def transformed(p)
+      (0..1).map do |i|
+        (p[i] - @old_center[i])*@zoom + (@center[i] - @old_center[i])*@zoom + @old_center[i]
+      end
+    end
+
+    # Takes [x1,y1] of **point** in zoomed screen, returns
+    # [x,y] in actual, non-zoomed coordinates
+    def untransformed(p)
+      (0..1).map do |i|
+        (p[i] - @old_center[i])/@zoom + (@old_center[i] - @center[i]) + @old_center[i]
+      end
+    end
+
+    # Takes [x1,y1] of **vector** in zoomed screen, returns
+    # [x,y] in actual, non-zoomed coordinates
+    def untransformed_vector(v)
+      v.map{|x| x/@zoom }
+    end
+  end
+
   def self.draw_gradient_polyline(surface, points, color1, color2)
     return if points.count < 2
 

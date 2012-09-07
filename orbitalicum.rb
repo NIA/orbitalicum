@@ -11,6 +11,8 @@ include Rubygame::Events
 include Graphics
 
 PATH_SIZE = 300
+ZOOM_FACTOR = 1.2
+
 app = App.new 1024, 768, "Orbitalicum game [work in progress]"
 
 puts "Initializing the world...."
@@ -47,7 +49,8 @@ fire = { :normal => Fire.new( sputnik, 10, 15, [248, 238, 100] ),
          :turbo  => Fire.new( sputnik, 14, 22, [255, 245, 185] ) }
 
 KEYS = { :left => :left, :right => :right, :forward => :up, :back => :down,
-         :pause => :p, :slow => :s, :turbo => :left_shift, :drag => :mouse_left }
+         :pause => :p, :slow => :s, :turbo => :left_shift, :drag => :mouse_left,
+         :zoomin => :equals, :zoomout => :minus, :move_screen => :mouse_middle }
 
 step = 0
 paused = false
@@ -57,6 +60,7 @@ engine_mode = :normal
 dragging = nil
 
 background = Rubygame::Surface.load "assets/background.jpg" # Image from http://apod.nasa.gov/apod/ap050804.html
+viewport = ZoomableSurface.new app.screen.size
 
 app.run do |event|
   case event
@@ -68,6 +72,10 @@ app.run do |event|
       slow = !slow
     when KEYS[:turbo]
       engine_mode = :turbo
+    when KEYS[:zoomin]
+      viewport.zoom *= ZOOM_FACTOR
+    when KEYS[:zoomout]
+      viewport.zoom /= ZOOM_FACTOR
     else
       action = KEYS.index(event.key)
       push_dir = action if PhysObject.direction? action
@@ -80,23 +88,28 @@ app.run do |event|
       engine_mode = :normal
     end
   when MousePressed
-    if event.button == KEYS[:drag]
-      dragging = stars.detect { |s| s.include? V2D[*event.pos] }
+    case event.button
+    when KEYS[:drag]
+      actual_pos = V2D[ *viewport.untransformed(event.pos) ]
+      dragging = stars.detect { |s| s.include? actual_pos }
+    when KEYS[:move_screen]
+      dragging = viewport
     end
   when MouseReleased
-    if event.button == KEYS[:drag]
+    if [ KEYS[:drag], KEYS[:move_screen] ].include? event.button
       dragging = nil
     end
   when MouseMoved
     if dragging
-      dragging.shift! *event.rel
+      actual_rel = viewport.untransformed_vector event.rel
+      dragging.shift! actual_rel
     end
   when ClockTicked
     next if paused
     step += 1
     app.draw do |screen|
       # TODO: check if it's slow
-      background.blit screen, [0,0]
+      background.blit viewport, [0,0]
 
       dt = slow ? 0.001 : 0.01 # event.seconds
 
@@ -112,11 +125,13 @@ app.run do |event|
       path.unshift(sputnik.pos_to_a) if step % 2 == 0
       path.pop if path.size > PATH_SIZE
 
-      Graphics.draw_gradient_polyline screen, path, [75, 75, 175], BG_COLOR
-      Graphics.draw_gradient_polyline screen, orbit, [255, 255, 255], BG_COLOR
-      fire[engine_mode].draw_on screen, -sputnik.direction_vector(push_dir) if push_dir and reaction > 0
-      drawables.each {|x| x.draw_on screen}
-      Graphics.draw_text screen, sputnik.speed.abs.to_i.to_s
+      Graphics.draw_gradient_polyline viewport, path, [75, 75, 175], BG_COLOR
+      Graphics.draw_gradient_polyline viewport, orbit, [255, 255, 255], BG_COLOR
+      fire[engine_mode].draw_on viewport, -sputnik.direction_vector(push_dir) if push_dir and reaction > 0
+      drawables.each {|x| x.draw_on viewport}
+      Graphics.draw_text viewport, sputnik.speed.abs.to_i.to_s
+
+      viewport.blit screen, [0, 0]
     end
   else
     # Show the details of the event
